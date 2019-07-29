@@ -1,4 +1,4 @@
-# DesafiosIDdogMobile
+# Desafios IDdog Mobile
 
 - Completo até o início de fazer conexão com API e receber JSON resposta de Sign/signup de usuário.
 - Utilizando desenvolvimento trunk-based devido a dimensão não tão grande do projeto.
