@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,6 +26,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,10 +145,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                         // Resposta
                         if (conn.getResponseCode() == 200) {
-                            Log.d("sucesso", conn.getResponseMessage());
+                            InputStream responseBody = conn.getInputStream();
+                            InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
+                            JsonReader jsonReader = new JsonReader(responseBodyReader);
+                            jsonReader.beginObject();
+                            while (jsonReader.hasNext()) {
+                                String key = jsonReader.nextName();
+                                if (key.equals("user")) {
+
+                                    // TODO Get Token
+
+                                    break;
+                                } else {
+                                    jsonReader.skipValue();
+                                }
+                            }
+                            Log.d("FIM", "Chegou ao fim!");
                         } else {
-                            Log.d("fracasso", conn.getResponseMessage());
+                            Log.d("PROBLMEA RESPONSE CODE", conn.getResponseMessage());
                         }
+
                     } catch (Exception error) {
                         Log.d("erro", error.toString());
                     }
