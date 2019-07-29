@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,8 +25,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * A login screen that offers login via email/password.
@@ -48,6 +52,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private AutoCompleteTextView mEmailView;
     private View mProgressView;
     private View mLoginFormView;
+
+    // Atributos da linguagem
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        email = mEmailView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -117,6 +124,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+
+            // Conexão com API
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        String urlStr = "https://api-iddog.idwall.co/signup";
+                        URL url = new URL(urlStr);
+                        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+                        // Configurando tempo e método
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        conn.setRequestMethod("POST");
+                        conn.setRequestProperty("email", email);
+
+                        // Resposta
+                        if (conn.getResponseCode() == 200) {
+                            Log.d("sucesso", conn.getResponseMessage());
+                        } else {
+                            Log.d("fracasso", conn.getResponseMessage());
+                        }
+                    } catch (Exception error) {
+                        Log.d("erro", error.toString());
+                    }
+                }
+            });
+
             mAuthTask = new UserLoginTask(email);
             mAuthTask.execute((Void) null);
         }
